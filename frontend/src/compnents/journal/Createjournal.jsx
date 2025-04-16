@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const CreateJournal = () => {
   const [title, setTitle] = useState('');
   const [article, setArticle] = useState('');
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState(' ');
   const [coverPicture, setCoverPicture] = useState(null);
   const user = localStorage.getItem('tokenUser');
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const CreateJournal = () => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('article', article);
-    formData.append('tags', tags);
+    formData.append('tags', JSON.stringify(tags.split(',').map(tag => tag.trim())));
 
     if (coverPicture) {
       formData.append('coverPicture', coverPicture);
