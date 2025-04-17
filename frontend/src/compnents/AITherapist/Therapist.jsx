@@ -1,7 +1,10 @@
+// Therapist.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Loader from 'react-js-loader';
 import Navbar from '../navbar/Navbar';
+import ReactMarkdown from 'react-markdown';
 import './Therapist.css';
 
 const API_KEY = process.env.REACT_APP_API_KEY;
@@ -23,7 +26,7 @@ const Therapist = () => {
     if (!input.trim()) return;
 
     const newMessage = { sender: 'user', text: input };
-    setMessages([...messages, newMessage]);
+    setMessages(msgs => [...msgs, newMessage]);
     setInput('');
     setLoading(true);
 
@@ -32,31 +35,24 @@ const Therapist = () => {
       const prompt = `Analyse the user's input and give suggestions or talk with them and provide an answer in paragraphs with spaces between paragraphs and points. Respond as if you are talking to the user in the first person, not the third person:\n\nUser: ${input}\nTherapist:`;
       const result = await model.generateContent(prompt);
       const response = await result.response;
-      let aiMessage = await response.text();
-
-      // Replace **word** with <strong>word</strong>
-      aiMessage = aiMessage.replace(/\*\*(.*?)\*\*/g, '$1');
+      const aiText = await response.text();
 
       // Simulate typing delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      setMessages([...messages, newMessage, { sender: 'ai', text: aiMessage }]);
+      setMessages(msgs => [...msgs, newMessage, { sender: 'ai', text: aiText }]);
     } catch (error) {
       console.error('Error generating response:', error);
-      setMessages([...messages, newMessage, { sender: 'ai', text: 'An error occurred while generating the response.' }]);
+      setMessages(msgs => [...msgs, newMessage, { sender: 'ai', text: 'An error occurred while generating the response.' }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (e) => setInput(e.target.value);
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') handleSend();
-  };
+  const handleInputChange = e => setInput(e.target.value);
+  const handleKeyPress = e => { if (e.key === 'Enter') handleSend(); };
 
   useEffect(() => {
-    // Scroll to the bottom of the chat box whenever messages change
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
@@ -68,9 +64,17 @@ const Therapist = () => {
       <div className="therapist-container">
         <h1 className="heading">Your Personal AI Assistant</h1>
         <div ref={chatBoxRef} className="chat-box">
-          {messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.sender === 'user' ? 'user-message' : 'ai-message'}`}>
-              {msg.text}
+          {messages.map((msg, i) => (
+            <div key={i} className={`message ${msg.sender === 'user' ? 'user-message' : 'ai-message'}`}>
+              {msg.sender === 'ai' ? (
+                <div className="markdown-content">
+                  <ReactMarkdown>
+                    {msg.text}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <p>{msg.text}</p>
+              )}
             </div>
           ))}
           {loading && <TypingAnimation color="#007BFF" />}
