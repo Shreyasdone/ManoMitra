@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Loader from 'react-js-loader';
 import Navbar from '../navbar/Navbar';
-
-
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -32,7 +32,6 @@ const Quiz = () => {
   const [answers, setAnswers] = useState(Array(questions.length).fill(''));
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [hoveredOption, setHoveredOption] = useState(null);
 
   const handleChange = (index, value) => {
     const newAnswers = [...answers];
@@ -40,27 +39,20 @@ const Quiz = () => {
     setAnswers(newAnswers);
   };
 
-  const handleOptionHover = (index) => {
-    setHoveredOption(index);
-  };
-
-  const handleOptionLeave = () => {
-    setHoveredOption(null);
-  };
-
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const prompt = `Analyze the following mental health quiz answers and generate a short summary regarding the persons mental health and what can he do, use points and headings and generate answer separated by paragraphs, also give a space between different paragraphs:\n\n${questions.map((q, i) => `${i+1}. ${q} ${answers[i]}`).join('\n')}`;
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      let text = await response.text();
-  
-      // Replace **word** with <strong>word</strong>
-      text = text.replace(/\*\*(.*?)\*\*/g, '$1');
-  
-      setResult(text);
+      const prompt = [
+        `Analyze the following mental health quiz answers and generate a short summary regarding the person's mental health and what they can do:`,
+        '',
+        ...questions.map((q, i) => `**${i + 1}. ${q}**  \n- **Answer:** ${answers[i]}`),
+      ].join('\n');
+      
+      const generated = await (await model.generateContent(prompt)).response;
+      const markdownText = await generated.text();
+
+      setResult(markdownText);
     } catch (error) {
       console.error('Error analyzing answers:', error);
       setResult('An error occurred while analyzing the answers.');
@@ -71,54 +63,60 @@ const Quiz = () => {
 
   return (
     <>
-    <Navbar />
-    <div className="max-w-4xl mx-auto p-6" style={{background: 'linear-gradient(to right, #D1D5DB, #E5E7EB, #F3F4F6)', borderRadius: '1rem', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)', marginTop: '6rem'}}>
-      <h1 className="text-2xl font-bold mb-6 text-center">Mental Health Quiz</h1>
-      {questions.map((question, index) => (
-        <div key={index} className="mb-4 text-black font-bold m-12">
-          <p className={`mb-2 text-lg`}>{`${index+1}. ${question}`}</p>
-          <div className="flex flex-col space-y-2">
-            {options.map((option, optionIndex) => (
-              <label
-                key={optionIndex}
-                className={`flex items-center p-3 px-5 block cursor-pointer rounded-full border border-black border-opacity-20 ${hoveredOption === index ? 'hover:bg-black hover:text-white' : 'hover:bg-gray-200'}`}
-                onMouseEnter={() => handleOptionHover(index)}
-                onMouseLeave={handleOptionLeave}
-              >
-                <input
-                  type="radio"
-                  name={`question-${index}`}
-                  value={option}
-                  checked={answers[index] === option}
-                  onChange={() => handleChange(index, option)}
-                  className="accent-primary"
-                />
-                <span className="ps-3 text-lg font-normal">{option}</span>
-              </label>
-            ))}
+      <Navbar />
+      <div className="max-w-4xl mx-auto p-6" style={{
+        background: 'linear-gradient(to right, #D1D5DB, #E5E7EB, #F3F4F6)',
+        borderRadius: '1rem',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08)',
+        marginTop: '6rem'
+      }}>
+        <h1 className="text-2xl font-bold mb-6 text-center">Mental Health Quiz</h1>
+        {questions.map((question, idx) => (
+          <div key={idx} className="mb-4 text-black font-bold m-12">
+            <p className="mb-2 text-lg">{`${idx + 1}. ${question}`}</p>
+            <div className="flex flex-col space-y-2">
+              {options.map((opt, j) => (
+                <label
+                  key={j}
+                  className="flex items-center p-3 px-5 block cursor-pointer rounded-full border border-black border-opacity-20 hover:bg-gray-200"
+                >
+                  <input
+                    type="radio"
+                    name={`question-${idx}`}
+                    value={opt}
+                    checked={answers[idx] === opt}
+                    onChange={() => handleChange(idx, opt)}
+                    className="accent-primary"
+                  />
+                  <span className="ps-3 text-lg font-normal">{opt}</span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
-      <button
-  onClick={handleSubmit}
-  className="mt-6 w-half bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded-full transition-colors duration-300 ml-72"
->
-  Submit
-</button>
+        ))}
 
-      {loading ? (
-        <div className="flex justify-center mt-6">
-          <Loader type="spinner-cub" bgColor={"#000000"} color={"#FFFFFF"} title={"spinner-cub"} size={100} />
-        </div>
-      ) : (
-        result && (
-          <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">Analysis Result</h2>
-            <p className="whitespace-pre-wrap">{result}</p>
+        <button
+          onClick={handleSubmit}
+          className="mt-6 w-half bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded-full transition-colors duration-300 ml-72"
+        >
+          Submit
+        </button>
+
+        {loading && (
+          <div className="flex justify-center mt-6">
+            <Loader type="spinner-cub" bgColor="#000" color="#FFF" size={100} />
           </div>
-        )
-      )}
-    </div>
+        )}
+
+        {!loading && result && (
+          <div className="mt-6 p-4 bg-gray-100 rounded-lg prose max-w-none">
+            <h2 className="text-xl font-semibold mb-4">Analysis Result</h2>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {result}
+            </ReactMarkdown>
+          </div>
+        )}
+      </div>
     </>
   );
 };
