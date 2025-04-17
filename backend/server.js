@@ -22,12 +22,23 @@ const server = http.createServer(app); // Create HTTP server
 
 
 app.use(express.json());
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
-  credentials: true,
+// app.use(cors({
+//   origin: '*',
+//   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
+//   credentials: true,
 
+// }));
+
+app.use(cors({
+  origin: 'https://mano-mitra-wellness.vercel.app',
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,            // if you need to read/write cookies or auth headers
 }));
+
+// make sure preflight OPTIONS are handled
+app.options('*', cors());
+
 app.use(cookieParser());
 app.use (bodyParser.json ({extended: true}));
 app.use (bodyParser.urlencoded({extended: true}));
