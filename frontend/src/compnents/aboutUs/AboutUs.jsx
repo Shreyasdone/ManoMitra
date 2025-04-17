@@ -29,9 +29,9 @@ const teamMembers = [
   {
     name: "Pornima Dokhale",
     img: pornimaImg,
-    instagram: "https://www.instagram.com/poornimaa04",
-    linkedin: "https://www.linkedin.com/in/pornimadokhale",
-    github: "https://github.com/member3",
+    instagram: "https://www.instagram.com/",
+    linkedin: "https://www.linkedin.com/",
+    github: "https://github.com/",
     college: "Vishwakarma Institute of Technology (VIT)",
     dept: "Computer Engineering (CSE)",
   },
