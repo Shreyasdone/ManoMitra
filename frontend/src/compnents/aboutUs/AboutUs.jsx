@@ -69,16 +69,16 @@ const AboutUs = () => {
                     "linear-gradient(to right, #D1D5DB, #E5E7EB, #F3F4F6)",
                 }}
               >
-                <a href="#">
+                <p>
                   <img
                     className="w-32 h-32 sm:w-48 sm:h-48 rounded-lg object-cover"
                     src={member.img}
                     alt={member.name}
                   />
-                </a>
+                </p>
                 <div className="p-5">
                   <h3 className="text-xl font-bold tracking-tight text-gray-900">
-                    <a href="#">{member.name}</a>
+                    <button>{member.name}</button>
                   </h3>
                   <span className="text-gray-500 dark:text-gray-400">
                     {member.college}

@@ -13,6 +13,7 @@ const MoodTrack = () => {
   const [mood, setMood] = useState(null);
   const [moodData, setMoodData] = useState([]);
   
+  console.log(mood)
   const username = localStorage.getItem('tokenUser');
   console.log(username);
 
