@@ -7,10 +7,9 @@
         "config": { "distDir": "build" }
       }
     ],
-    "rewrites": [
-      { "source": "/static/:path*", "destination": "/static/:path*" },
-      { "source": "/:file*.:ext+", "destination": "/:file*.:ext+" },
-      { "source": "/(.*)",         "destination": "/index.html" }
+    "routes": [
+      { "handle": "filesystem" },
+      { "src": "/(.*)", "dest": "/index.html" }
     ]
   }
   
