@@ -30,7 +30,7 @@ app.use(express.json());
 // }));
 
 app.use(cors({
-  origin: 'https://mano-mitra-wellness.vercel.app',
+  origin: ['https://mano-mitra-wellness.vercel.app','http://localhost:3000','https://mano-mitra-wellness-865bbmx76-shreyas-dones-projects.vercel.app','https://mano-mitra-wellness-git-main-shreyas-dones-projects.vercel.app'],
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,            // if you need to read/write cookies or auth headers
