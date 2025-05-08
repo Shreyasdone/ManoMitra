@@ -29,6 +29,5 @@ MentalHealthApp is a comprehensive mental health application built using the MER
 - **React:** Frontend library to build a responsive and interactive user interface.
 - **Node.js:** Runtime environment to execute JavaScript on the server.
 - **HTML, CSS, JavaScript:** Core web technologies for building the frontend.
-- **RapidAPI:** Platform used to integrate the Gemini API for AI therapist and quiz responses.
 - **Gemini API:** Used for natural language processing to power the AI therapist and generate quiz feedback.
 
