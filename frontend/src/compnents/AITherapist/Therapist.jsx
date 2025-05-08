@@ -40,10 +40,10 @@ const Therapist = () => {
       // Simulate typing delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      setMessages(msgs => [...msgs, newMessage, { sender: 'ai', text: aiText }]);
+      setMessages(msgs => [...msgs, { sender: 'ai', text: aiText }]);
     } catch (error) {
       console.error('Error generating response:', error);
-      setMessages(msgs => [...msgs, newMessage, { sender: 'ai', text: 'An error occurred while generating the response.' }]);
+      setMessages(msgs => [...msgs, { sender: 'ai', text: 'An error occurred while generating the response.' }]);
     } finally {
       setLoading(false);
     }
